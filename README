@@ -1,0 +1,65 @@
+ActsAsMoney
+===========
+
+Provides a class to represent currency which allows simple mathematical and comparison operations, a means of tying it into ActiveRecord, several convenience methods for working with money and a Simple ForEx framework. 
+
+
+The Money Class
+===============
+
+To create an instance of money:
+
+  ten_dollars = ActsAsMoney::Money.new(1000, 'USD')
+  5_pounds = 5.GBP # a simple shortcut
+  
+  10.GBP / 2 => 10.GBP
+  10.GBP > 5.GBP => true
+  
+  
+acts_as_money
+=============
+
+To define fields in an active record object as holding money add amount and currency fields to your database then:
+
+  class Booking < ActiveRecord::Base
+    acts_as_money :price, 
+                  :amount => :name_of_amount_field, 
+                  :currency => :name_of_currency_field
+    # the options default to 'amount' and 'currency' repectively
+  end
+  
+You rather than having fields in your DB you can just create methods in your model:
+
+  class Booking < ActiveRecord::Base
+    acts_as_money :price,
+                  :currency => :event_currency
+                  
+    def event_currency
+      event.currency
+    end
+  end  
+  
+Your model now has a virtual field that you can get and set using Money objects.
+
+ForEx
+=====
+
+Write a ForEx service class that inherits from ActsAsMoney::Forex::Service and retrieves rates from your desired source.  See lib/services/ecb.rb for an example.  You can then assign this service to the Money class to be used for exchange:
+
+  ActsAsMoney::Money.exchange_rate_service = MyForexService.new
+
+Now you can use various methods to perform exchange between currencies:
+
+  Money.new(454, 'USD').convert_to('GBP')
+  Money.new(465778, 'GBP').to_THB # a shortcut equivalent
+
+Maths operations will also perform and implicit transform the currency of the first item if done on mixed currencies:
+
+  10.GBP - 560.THB => answer in GBP
+  50.USD + 1.GBP => answer in USD
+  
+All feedback, patches etc to dan@danwebb.net
+
+
+
+Copyright (c) 2007 Dan Webb, released under the MIT license
