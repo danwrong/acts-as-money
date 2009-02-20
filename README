@@ -12,7 +12,7 @@ To create an instance of money:
   ten_dollars = ActsAsMoney::Money.new(1000, 'USD')
   5_pounds = 5.GBP # a simple shortcut
   
-  10.GBP / 2 => 10.GBP
+  10.GBP / 2 => 5.GBP
   10.GBP > 5.GBP => true
   
   
